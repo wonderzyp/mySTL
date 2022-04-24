@@ -6,13 +6,23 @@ template <typename T>
 class vector{
 public:
 
-  vector(){realloc(2);}
+  vector(){
+    printf("mySTL::vector construct\n");
+    realloc(2);
+  }
   
   void push_back(const T& value){
     if (m_size >= m_capacity) 
       realloc(m_size<<1);
     
     m_Data[m_size++] = value;
+  }
+
+    void push_back(T&& value){
+    if (m_size >= m_capacity) 
+      realloc(m_size<<1);
+    
+    m_Data[m_size++] = std::move(value);
   }
 
   T& operator[](size_t index) {return m_Data[index];}
@@ -28,7 +38,7 @@ private:
       m_size = newCapacity;
 
     for (int i=0; i<m_size; ++i){
-      newBlock[i] = m_Data[i];
+      newBlock[i] = std::move(m_Data[i]);
     }
     
     delete[] m_Data;
