@@ -42,25 +42,31 @@ TEST(TestPushback, String){
 
 class Vector3{
 public:
-  Vector3(){};
+  Vector3(){
+    m_MemoryBlock = new int[5];
+  };
   Vector3(float scalar)
-    :x(scalar), y(scalar), z(scalar){};
+    :x(scalar), y(scalar), z(scalar){
+      m_MemoryBlock = new int[5];
+    };
 
   Vector3(float _x, float _y, float _z)
-    :x(_x), y(_y), z(_z){};
+    :x(_x), y(_y), z(_z){
+      m_MemoryBlock = new int[5];
+    };
 
-  Vector3(const Vector3& other)
-    :x(other.x), y(other.y), z(other.z){
-      printf("Copy\n");
-  }
+  Vector3(const Vector3& other) = delete;
 
-  Vector3(const Vector3&& other)
+  Vector3(Vector3&& other)
     :x(other.x), y(other.y), z(other.z){
       printf("Move\n");
+      m_MemoryBlock = other.m_MemoryBlock;
+      other.m_MemoryBlock = nullptr;
   }
 
   ~Vector3(){
     printf("Destory\n");
+    delete[] m_MemoryBlock;
   }
 
   Vector3& operator=(const Vector3& other){
@@ -88,13 +94,32 @@ private:
   float x{};
   float y{};
   float z{};
+  int* m_MemoryBlock = nullptr;
 };
 
+#if 1
 TEST(TestPushback, Class){
   mySTL::vector<Vector3> vec;
   vec.push_back(Vector3());
   vec.push_back(Vector3(1.0f));
   vec.push_back(Vector3(1.0f, 2.0f, 3.0f));
+}
+
+TEST(TestEmplaceback, Class){
+  mySTL::vector<Vector3> vec;
+  vec.emplace_back();
+  vec.emplace_back(1.0f);
+  vec.emplace_back(1.0f, 2.0f, 3.0f);
+}
+#endif
+
+TEST(TestPopBack, Class){
+  mySTL::vector<Vector3> vec;
+  vec.emplace_back();
+  vec.emplace_back(1.0f);
+  vec.emplace_back(1.0f, 2.0f, 3.0f);
+  vec.pop_back();
+  vec.pop_back();
 }
 
 
